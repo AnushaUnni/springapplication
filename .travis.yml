@@ -1,0 +1,33 @@
+sudo: required
+language: java
+jdk:
+  - openjdk8
+services:
+  - docker
+
+before_install:
+  - docker pull openjdk:8-jdk-alpine
+
+script:
+  - mvn test
+  - mvn clean package
+
+after_success:
+  - docker build -t anushaunni/simple_spring_boot .
+  #Login into docker cli
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  #take the images and push to docker hub
+  - docker push anushaunni/simple_spring_boot
+
+deploy:
+  provider: elasticbeanstalk
+  region: us-east-1
+  app: springbootdocker
+  env: Springbootdocker-env-1
+  bucket_name: elasticbeanstalk-us-east-1-300813874739
+  bucket_path: springbootdocker
+  edge: true # opt in to dpl v2
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
