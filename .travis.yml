@@ -13,7 +13,7 @@ script:
   - mvn clean package
 
 after_success:
-  - docker build -t anushaunni/springboot
+  - docker build -t anushaunni/springboot .
   #Login into docker cli
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   #take the images and push to docker hub
